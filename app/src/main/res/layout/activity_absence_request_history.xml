@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.hoangdang.diemdanh.absenceRequest.AbsenceRequestHistoryActivity">
+
+    <ListView
+        android:id="@+id/absence_request_history_listView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="15dp"
+        android:paddingLeft="@dimen/item_padding"
+        android:paddingRight="@dimen/item_padding"/>
+
+</android.support.constraint.ConstraintLayout>
