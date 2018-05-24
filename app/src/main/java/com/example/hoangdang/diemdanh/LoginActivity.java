@@ -45,6 +45,7 @@ public class LoginActivity extends AppCompatActivity {
     @BindView(R.id.forgot_pw_textView) TextView _forgot_pw_textView;
 
     protected ProgressDialog progressDialog;
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -184,6 +185,7 @@ public class LoginActivity extends AppCompatActivity {
                 .putInt(AppVariable.USER_ID, user.getID())
                 .putInt(AppVariable.USER_ROLE, user.getRole())
                 .putString(AppVariable.USER_NAME, user.getLastName() + " " + user.getFirstName())
+                .putString(AppVariable.USER_PERSON_ID, user.person_id)
                 .apply();
 
         DatabaseHelper db = new DatabaseHelper(this);
@@ -286,33 +288,128 @@ public class LoginActivity extends AppCompatActivity {
 
                     JSONObject jsonUserData = new JSONObject(jsonObject.getString("user"));
 
-                    onLoginSuccess(
-                            new User(
-                                    jsonUserData.getInt("id"),
-                                    jsonUserData.getInt("role_id"),
-                                    jsonUserData.getString("email"),
-                                    jsonObject.getString("token"),
-                                    jsonUserData.getString("first_name"),
-                                    jsonUserData.getString("last_name"),
-                                    jsonUserData.getString("phone")
-                            ));
+                    mUser = new User(
+                            jsonUserData.getInt("id"),
+                            jsonUserData.getInt("role_id"),
+                            jsonUserData.getString("email"),
+                            jsonObject.getString("token"),
+                            jsonUserData.getString("first_name"),
+                            jsonUserData.getString("last_name"),
+                            jsonUserData.getString("phone"));
 
                     switch (jsonUserData.getInt("role_id")){
                         case AppVariable.STAFF_ROLE:
                             break;
+
                         case AppVariable.STUDENT_ROLE:
-                            new RetrieveStudyingCourseTask().execute(
-                                    jsonObject.getString("token"), jsonUserData.getString("id"));
+                            //TODO
+                            new GetPersonIdTask().execute(
+                                    jsonObject.getString("token"),
+                                    jsonUserData.getString("id"));
                             break;
+
                         case AppVariable.TEACHER_ROLE:
+                            onLoginSuccess(mUser);
+
                             new RetrieveTeachingCourseTask().execute(
-                                    jsonObject.getString("token"), jsonUserData.getString("id"));
+                                    mUser.getToken(), String.valueOf(mUser.getID()));
                             break;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                     onLoginFailed(e.getMessage());
                 }
+            }
+        }
+    }
+
+    private class GetPersonIdTask extends AsyncTask<String, Void, Integer> {
+        private String strJsonResponse;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMessage("Sending...");
+            progressDialog.show();
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            try {
+                URL url = new URL(Network.API_GET_PERSON_ID);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                try {
+                    JSONObject jsonUserData = new JSONObject();
+                    jsonUserData.put("token", params[0]);
+                    jsonUserData.put("id", params[1]);
+
+                    connection.setReadTimeout(10000);
+                    connection.setConnectTimeout(15000);
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+
+                    //write
+                    OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+                    writer.write(jsonUserData.toString());
+                    writer.flush();
+
+                    //check http response code
+                    int status = connection.getResponseCode();
+                    switch (status){
+                        case HttpURLConnection.HTTP_OK:
+                            //read response
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+
+                            while ((line = bufferedReader.readLine()) != null) {
+                                line = line + "\n";
+                                sb.append(line);
+                            }
+
+                            bufferedReader.close();
+                            strJsonResponse = sb.toString();
+
+                            return HttpURLConnection.HTTP_OK;
+                        default:
+                            Toast.makeText(getBaseContext(), connection.getResponseMessage(), Toast.LENGTH_LONG).show();
+                            return 0;
+                    }
+                }
+                finally{
+                    connection.disconnect();
+                }
+            }
+            catch(Exception e) {
+                return 0;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Integer status) {
+            progressDialog.dismiss();
+            if (status != HttpURLConnection.HTTP_OK){
+                Toast.makeText(getBaseContext(), "Server Error", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            try {
+                JSONObject jsonObject = new JSONObject(strJsonResponse);
+                JSONObject studentJSON = jsonObject.getJSONObject("student");
+
+                mUser.person_id = studentJSON.getString("person_id");
+
+                onLoginSuccess(mUser);
+
+                new RetrieveStudyingCourseTask().execute(
+                        mUser.getToken(), String.valueOf(mUser.getID()));
+
+            } catch (Exception e) {
+                AppVariable.alert(LoginActivity.this, e.toString());
+                return;
             }
         }
     }
