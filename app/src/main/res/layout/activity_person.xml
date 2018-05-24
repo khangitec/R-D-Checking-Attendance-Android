@@ -1,0 +1,132 @@
+<!-- Copyright (c) Microsoft. All rights reserved. -->
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <RelativeLayout
+        android:id="@+id/rel_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/primary_darker">
+
+        <ImageView
+            android:id="@+id/imv_back"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_white"/>
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Upload Faces"
+            android:textSize="@dimen/title_text_size"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/person_name_view"
+        android:layout_below="@+id/rel_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:layout_marginBottom="@dimen/view_margin">
+
+        <TextView
+            android:id="@+id/person_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:text="@string/person_name"
+            android:textColor="@android:color/black"/>
+
+        <EditText
+            android:id="@+id/edit_person_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/person_name"
+            android:layout_toEndOf="@+id/person_name"
+            android:singleLine="true"
+            android:maxLength="30"
+            android:textColor="@android:color/black"
+            android:hint="@string/type_in_person_name_tip" />
+
+    </RelativeLayout>
+
+    <GridView
+        android:id="@+id/gridView_faces"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:background="#E0E0E0"
+        android:layout_below="@+id/person_name_view"
+        android:layout_above="@+id/person_tip"
+        android:numColumns="3"
+        android:verticalSpacing="@dimen/view_margin"
+        android:horizontalSpacing="@dimen/view_margin"
+        android:layout_marginBottom="@dimen/view_margin"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/person_tip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/info"
+        android:layout_marginBottom="@dimen/view_margin"
+        android:text="@string/person_tip"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/button_bar"
+        android:layout_gravity="center" />
+
+    <LinearLayout
+        android:id="@+id/button_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal" >
+
+        <Button
+            android:id="@+id/add_face"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginRight="@dimen/view_margin"
+            android:layout_marginEnd="@dimen/view_margin"
+            android:text="@string/add_face"
+            android:onClick="addFace"
+            style="@style/ButtonStyle" />
+
+        <Button
+            android:id="@+id/done_and_save"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/done_and_save"
+            android:onClick="doneAndSave"
+            style="@style/ButtonStyle" />
+
+    </LinearLayout>
+
+</RelativeLayout>

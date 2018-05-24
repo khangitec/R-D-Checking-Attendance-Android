@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rel_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/primary_darker">
+
+        <ImageView
+            android:id="@+id/imv_back"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_white"/>
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Upload Faces"
+            android:textSize="@dimen/title_text_size"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rel_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/rel_topbar"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/txt_title_student_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:text="Student name: "
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size" />
+
+        <RelativeLayout
+            android:layout_toRightOf="@+id/txt_title_student_name"
+            android:layout_alignBaseline="@+id/txt_title_student_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:background="@android:color/black"
+            android:padding="1dp">
+
+            <TextView
+                android:id="@+id/txt_student_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/white"
+                android:text=""
+                android:textColor="@color/black"
+                android:textSize="@dimen/text_size" />
+
+        </RelativeLayout>
+
+        <GridView
+            android:id="@+id/all_faces"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:layout_below="@+id/txt_title_student_name"
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:numColumns="4"
+            android:horizontalSpacing="5dp"
+            android:verticalSpacing="5dp"
+            android:background="#E0E0E0" />
+
+        <TextView
+            android:id="@+id/txt_title_long_press_a_face_to_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_below="@+id/all_faces"
+            android:text="- Long press a face to delete."
+            android:textColor="@color/black"
+            android:textSize="@dimen/text_size" />
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_below="@id/txt_title_long_press_a_face_to_delete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/btn_add_face"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Add Face"/>
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Submit"/>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</RelativeLayout>

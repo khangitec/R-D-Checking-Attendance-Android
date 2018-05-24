@@ -34,4 +34,31 @@
     <string name="copy_right">Copyrights © %1$d</string>
     <string name="app_description">The Licenses API is currently available for developers to preview. During the preview period, the API may change without advance notice.</string>
     <string name="generate_code">Generate code</string>
+
+    <string name="select_an_image">Select an Image</string>
+    <string name="take_photo">Take a Photo</string>
+    <string name="select_image_in_album">From Gallery</string>
+
+    <string name="person_name">Person name:</string>
+    <string name="type_in_person_name_tip">Name (within 30 characters)</string>
+    <string name="person_tip">- Long press on a face to delete.</string>
+    <string name="add_face">Add Face</string>
+    <string name="done_and_save">Save</string>
+
+    <string name="user_provided_person_name">Person name</string>
+    <string name="user_provided_description_data">User data</string>
+    <string name="user_provided_person_group_name">Person group name</string>
+    <string name="user_provided_person_group_description_data">User data</string>
+
+    <string name="progress_dialog_title">Please wait</string>
+    <string name="delete">Delete</string>
+    <string name="person_name_empty_warning_message">Person name cannot be empty</string>
+    <string name="select_face_tip">Select this person\'s faces (if exist) by click on the checkbox.</string>
+
+    <string name="notification_progress">Uploading image...</string>
+    <string name="notifaction_success">Successfully uploaded</string>
+    <string name="notification_fail">Image failed to upload...</string>
+    <string name="notification_share_link">Share link</string>
+    <string name="zero_face">Face database: 0 faces in total</string>
+
 </resources>

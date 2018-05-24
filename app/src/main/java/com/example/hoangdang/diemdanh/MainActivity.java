@@ -30,6 +30,8 @@ import com.example.hoangdang.diemdanh.SupportClass.AppVariable;
 import com.example.hoangdang.diemdanh.SupportClass.DatabaseHelper;
 import com.example.hoangdang.diemdanh.SupportClass.Network;
 import com.example.hoangdang.diemdanh.SupportClass.SecurePreferences;
+import com.example.hoangdang.diemdanh.studentQuiz.PersonActivity;
+import com.example.hoangdang.diemdanh.studentQuiz.UploadFaces2Activity;
 import com.example.hoangdang.diemdanh.timeTable.TimeTableActivity;
 
 import org.json.JSONArray;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected ProgressDialog progressDialog;
     public static int user_role;
 
+//    private Handler mHandler;
+
     @Override
     protected void onStart() {
         db = new DatabaseHelper(this);
@@ -68,6 +72,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        if (!Network.isOnline(this)) {
+            AppVariable.alert(this, "No Internet");
+            return;
+        }
+
+        progressDialog = new ProgressDialog(MainActivity.this,
+                R.style.AppTheme_Dark_Dialog);
+        progressDialog.setIndeterminate(true);
+        progressDialog.setCanceledOnTouchOutside(false);
+        progressDialog.setMessage("Retrieving data...");
 
         ButterKnife.bind(this);
 
@@ -151,6 +166,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(new Intent(this, TimeTableActivity.class));
                 overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
                 break;
+            case R.id.mnUploadFaceTable: {
+                SharedPreferences pref = new SecurePreferences(this);
+                String studentId = pref.getString(AppVariable.USER_ID, "");
+                String studentName = pref.getString(AppVariable.USER_NAME, "");
+                String personId = pref.getString(AppVariable.USER_PERSON_ID, "");
+
+                Intent intent = new Intent(this, PersonActivity.class);
+                intent.putExtra("AddNewPerson", true);
+                intent.putExtra("PersonGroupId", "hcmus-face");
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("PersonName", studentName);
+                intent.putExtra("person_id", personId);
+                startActivity(intent);
+                overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
+                break;
+            }
             case R.id.mnAccount:
                 showProfileFragment();
                 overridePendingTransition(R.anim.pull_in_right, R.anim.push_out_left);
@@ -293,11 +324,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-            progressDialog = new ProgressDialog(MainActivity.this,
-                    R.style.AppTheme_Dark_Dialog);
-            progressDialog.setIndeterminate(true);
-            progressDialog.setCanceledOnTouchOutside(false);
-            progressDialog.setMessage("Retrieving data...");
+
             progressDialog.show();
         }
 
