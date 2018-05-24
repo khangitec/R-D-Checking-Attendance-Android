@@ -14,6 +14,7 @@ public class AppVariable {
     public static final String USER_TOKEN = "user_token";
     public static final String USER_ID = "user_id";
     public static final String USER_ROLE = "user_role";
+    public static final String USER_PERSON_ID = "person_id";
 
     public static final String CURRENT_ATTENDANCE = "current_attendance";
     public static final String CURRENT_COURSE_ID = "current_course_id";

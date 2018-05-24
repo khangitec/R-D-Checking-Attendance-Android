@@ -16,13 +16,14 @@ public class Network {
     //public static final String HOST = "http://192.168.1.106:3000/"; //Hai Thanh
     //public static final String HOST = "http://192.168.1.162:3000/"; //ct
 	//public static final String HOST = "http://192.168.1.114:3000/"; //test
-    //public static final String HOST = "http://192.168.1.18:3000/"; //test
-    public static final String HOST = "https://iteccyle8.herokuapp.com/"; //heroku
+//    public static final String HOST = "http://192.168.2.213:3000/"; //heroku
+    public static final String HOST = "https://iteccyle8.herokuapp.com/";
 
     public static final String API_LOGIN = HOST + "authenticate/login";
     public static final String API_LOGOUT = HOST + "authenticate/logout";
 
     public static final String API_RETRIEVE_STUDENT = HOST + "api/attendance/check-attendance";
+    public static final String API_SUBMIT_CHECK_ATTENDANCE = HOST + "api/check-attendance/verify-face";
 
     public static final String API_RETRIEVE_COURSE_LIST = HOST + "api/course/teaching";
     public static final String API_RETRIEVE_STUDYING_COURSE_LIST = HOST + "api/course/studying";
@@ -49,12 +50,19 @@ public class Network {
     public static final String API_CHECK_DELEGATE_CODE = HOST + "api/attendance/check-delegate-code";
     public static final String API_GET_DELEGATE_CODE = HOST + "api/attendance/generate-delegate-code";
 
-    public static final String API_CHECK_QUIZ_CODE = HOST + "api/quiz/check-code";
-    public static final String API_GET_QUIZ = HOST + "api/quiz/detail";
+    public static final String API_CHECK_QUIZ_CODE = HOST + "api/quiz/join";
+    public static final String API_GET_PUBLISH_QUIZ = HOST + "api/quiz/published";
     public static final String API_SUBMIT_QUIZ = HOST + "api/quiz/submit";
+    public static final String API_QUIZ_LIST = HOST + "api/quiz/list";
+    public static final String API_QUIZ_START = HOST + "api/quiz/start";
+    public static final String API_QUIZ_RESULT = HOST + "api/quiz/quizMobileResults";
+    public static final String API_UPLOAD_FACE_TO_STUDENT = HOST + "api/student/uploadFace";
+    public static final String API_STUDENT_BY_ID = HOST + "api/student/detail/";
 
     public static final String API_USER_CHANGE_PASSWORD = HOST + "api/user/change-password";
     public static final String API_USER_RESET_PASSWORD = HOST + "authenticate/forgot-password";
+    public static final String API_GET_PERSON_ID = HOST + "api/student/student-by-id";
+    public static final String API_SUBMIT = HOST + "api/check-attendance/verify-face";
     public static final String API_SYNC = "https://";
 
     /**

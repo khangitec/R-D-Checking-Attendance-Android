@@ -8,6 +8,7 @@ public class User {
     private String strLastName;
     private String strToken;
     private String strPhone;
+    public String person_id;
 
     public String getToken() {
         return strToken;
@@ -68,6 +69,17 @@ public class User {
     public User(String strEmail, String strToken) {
         this.strEmail = strEmail;
         this.strToken = strToken;
+    }
+
+    public User(Integer iID, Integer iRole, String strEmail, String strToken, String strLastName, String strFirstName, String strPhone, String personId){
+        this.iID = iID;
+        this.iRole = iRole;
+        this.strEmail = strEmail;
+        this.strFirstName = strFirstName;
+        this.strLastName = strLastName;
+        this.strToken = strToken;
+        this.strPhone = strPhone;
+        this.person_id = personId;
     }
 
     public User(Integer iID, Integer iRole, String strEmail, String strToken, String strLastName, String strFirstName, String strPhone){
