@@ -1,5 +1,6 @@
 package com.example.hoangdang.diemdanh.Fragments;
 
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -22,8 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.hoangdang.diemdanh.CurrentSession.CurrentSessionActivity;
-import com.example.hoangdang.diemdanh.FaceReg.FaceReg;
-//import com.example.hoangdang.diemdanh.FaceReg.FaceRegActivity_ViewBinding;
 import com.example.hoangdang.diemdanh.QRCode.QRCodeActivity;
 import com.example.hoangdang.diemdanh.R;
 import com.example.hoangdang.diemdanh.ScanQRActivity;
@@ -33,8 +32,11 @@ import com.example.hoangdang.diemdanh.SupportClass.DatabaseHelper;
 import com.example.hoangdang.diemdanh.SupportClass.Network;
 import com.example.hoangdang.diemdanh.SupportClass.SecurePreferences;
 import com.example.hoangdang.diemdanh.SupportClass.Student;
+import com.example.hoangdang.diemdanh.studentQuiz.PersonActivity;
 import com.example.hoangdang.diemdanh.studentQuiz.StudentQuizActivity;
+import com.example.hoangdang.diemdanh.teacherQuiz.FaceDetectionActivity;
 import com.example.hoangdang.diemdanh.teacherQuiz.TeacherQuizActivity;
+import com.example.hoangdang.diemdanh.utils.DialogUtils;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.google.zxing.integration.android.IntentResult;
 
@@ -43,12 +45,17 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+
+import javax.net.ssl.HttpsURLConnection;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -60,17 +67,14 @@ public class AttendanceFragment extends Fragment {
     @BindView(R.id.use_checklist_button)
     Button _use_checklistButton;
 
-
-    @BindView(R.id.use_qr_button)
-    Button _use_QRButton;
-
-
     @BindView(R.id.use_quiz_button)
     Button _use_quizButton;
 
-
     @BindView(R.id.use_face_rec_button)
     Button _use_face_recButton;
+
+    @BindView(R.id.use_qr_button)
+    Button _use_QRButton;
 
     @BindView(R.id.cancel_attendance)
     Button _cancel_button;
@@ -81,8 +85,8 @@ public class AttendanceFragment extends Fragment {
     @BindView(R.id.gridView_current_session)
     GridView _current_sessionGrip;
 
-    //@BindView(R.id.statistic_title)
-    //TextView _statistic_title;
+    @BindView(R.id.statistic_title)
+    TextView _statistic_title;
 
     DatabaseHelper db;
 
@@ -155,7 +159,7 @@ public class AttendanceFragment extends Fragment {
             params.setMargins(params.leftMargin, 50, params.rightMargin, params.bottomMargin); //left, top, right, bottom
             _use_checklistButton.setLayoutParams(params);
             _current_sessionGrip.setVisibility(View.GONE);
-            //_statistic_title.setVisibility(View.GONE);
+            _statistic_title.setVisibility(View.GONE);
         }
 
         setupButtonListener();
@@ -224,7 +228,14 @@ public class AttendanceFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     socket.disconnect();
-                    startActivity(new Intent(getContext(), TeacherQuizActivity.class));
+                    Intent intent = new Intent(getActivity(), TeacherQuizActivity.class);
+                    getActivity().startActivity(intent);
+//                    //TODO
+//                    SharedPreferences pref = new SecurePreferences(getActivity());
+//                    new QuizTask().execute(
+//                            pref.getString(AppVariable.CURRENT_CLASS_ID, null),
+//                            pref.getString(AppVariable.CURRENT_COURSE_ID, null),
+//                            pref.getString(AppVariable.USER_TOKEN, null));
                 }
             });
 
@@ -244,12 +255,19 @@ public class AttendanceFragment extends Fragment {
                 }
             });
 
-            //dan toi screen moi(teacher)(face reg)
+            _use_face_recButton.setVisibility(View.VISIBLE);
             _use_face_recButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     socket.disconnect();
-                    startActivity(new Intent(getContext(), FaceReg.class));
+
+                    SharedPreferences pref = new SecurePreferences(getContext());
+                    String userToken = pref.getString(AppVariable.USER_TOKEN, null);
+
+                    Intent intent = new Intent(getActivity(), FaceDetectionActivity.class);
+                    intent.putExtra("attendanceID", attendanceID);
+                    intent.putExtra("userToken", userToken);
+                    startActivity(intent);
                 }
             });
 
@@ -313,7 +331,7 @@ public class AttendanceFragment extends Fragment {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     SharedPreferences prefs = new SecurePreferences(getActivity());
-                                    //TODO: if offline
+
                                     if (Network.isOnline(getActivity())) {
                                         socket.disconnect();
                                         JSONObject obj = new JSONObject();
@@ -372,18 +390,9 @@ public class AttendanceFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     showInputQuizCodeDialog();
-                    //startActivity(new Intent(getContext(), StudentQuizActivity.class));
+//                    startActivity(new Intent(getContext(), StudentQuizActivity.class));
                 }
             });
-
-            //dan toi new screen cho student(face reg)
-            _use_face_recButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    startActivity(new Intent(getContext(), FaceReg.class));
-                }
-            });
-
 
             _cancel_button.setVisibility(View.GONE);
             _finish_button.setVisibility(View.GONE);
@@ -402,7 +411,7 @@ public class AttendanceFragment extends Fragment {
         scannerIntegrator.setCaptureActivity(ScanQRActivity.class);
         scannerIntegrator.setPrompt("");
         scannerIntegrator.setOrientationLocked(false);
-        scannerIntegrator.setBeepEnabled(false);//true
+        scannerIntegrator.setBeepEnabled(true);
         scannerIntegrator.initiateScan();
     }
 
@@ -536,6 +545,13 @@ public class AttendanceFragment extends Fragment {
             Toast.makeText(getActivity(), toast, Toast.LENGTH_LONG).show();
             toast = null;
         }
+        DialogUtils.showMessageDialog(getActivity(),"Error", toast, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        },null);
     }
 
     private void saveStudentData(ArrayList<Student> students) {
@@ -745,9 +761,9 @@ public class AttendanceFragment extends Fragment {
             int flag = 0;
             try {
                 URL url;
-                int a = params[1].indexOf("localhost/"); //localhost//build ko https hoac co
-                int b = a + 23;
-                //String c = Network.HOST + params[1].substring(b);
+                int a = params[1].indexOf("localhost/");
+//                int b = a + 23;
+//                String c = Network.HOST + params[1].substring(b);
 
                 url = new URL(params[1]); //a= host
 
@@ -966,7 +982,7 @@ public class AttendanceFragment extends Fragment {
             int flag = 0;
             try {
                 URL url = new URL(Network.API_CHECK_QUIZ_CODE);
-                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                HttpURLConnection connection = null;
                 try {
                     //prepare json data
                     JSONObject jsonUserData = new JSONObject();
@@ -975,6 +991,7 @@ public class AttendanceFragment extends Fragment {
 
                     id = params[1];
 
+                    connection = (HttpURLConnection) url.openConnection();
                     connection.setReadTimeout(10000);
                     connection.setConnectTimeout(15000);
                     connection.setRequestMethod("POST");
@@ -1025,21 +1042,19 @@ public class AttendanceFragment extends Fragment {
             if (status != HttpURLConnection.HTTP_OK){
                 progressDialog.dismiss();
                 toast = "Server error";
-            }
-            else {
+            } else {
                 try{
                     JSONObject jsonObject = new JSONObject(strJsonResponse);
                     String result = jsonObject.getString("result");
-                    String message = jsonObject.getString("message");
+                    //String message = jsonObject.getString("message");
                     if (result.equals("failure")){
-                        toast = message;
+                        //toast = message;
                         progressDialog.dismiss();
-                    }
-                    else {
-                        int quiz_id = jsonObject.getInt("quiz_id");
+                    } else {
+                        //int quiz_id = jsonObject.getInt("quiz_id");
                         SharedPreferences pref = new SecurePreferences(getActivity());
                         pref.edit()
-                                .putInt(AppVariable.CURRENT_QUIZ_ID, quiz_id)
+                                .putInt(AppVariable.CURRENT_QUIZ_ID, Integer.parseInt(id) /*quiz_id*/)
                                 .apply();
 
                         progressDialog.dismiss();
@@ -1330,6 +1345,148 @@ public class AttendanceFragment extends Fragment {
 
             });
             socket.connect();
+        }
+    }
+
+    private class QuizTask extends AsyncTask<String, Void, Integer> {
+
+        private Exception exception;
+        private String strJsonResponse;
+        private String id;
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog.setMessage("Loading...");
+        }
+
+        @Override
+        protected Integer doInBackground(String... params) {
+            int flag = 0;
+            try {
+                URL url = new URL(Network.API_QUIZ_LIST);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                try {
+                    //prepare json data
+                    JSONObject jsonUserData = new JSONObject();
+                    jsonUserData.put("class_id", params[0]);
+                    jsonUserData.put("course_id", params[1]);
+                    jsonUserData.put("token", params[2]);
+
+                    connection.setReadTimeout(10000);
+                    connection.setConnectTimeout(15000);
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
+                    connection.setRequestProperty("Accept", "application/json");
+                    connection.setDoInput(true);
+                    connection.setDoOutput(true);
+
+                    //write
+                    OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
+                    writer.write(jsonUserData.toString());
+                    writer.flush();
+
+                    //check http response code
+                    int status = connection.getResponseCode();
+                    switch (status){
+                        case HttpURLConnection.HTTP_OK:
+                            //read response
+                            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+
+                            while ((line = bufferedReader.readLine()) != null) {
+                                sb.append(line+"\n");
+                            }
+
+                            bufferedReader.close();
+                            strJsonResponse = sb.toString();
+
+                            flag = HttpURLConnection.HTTP_OK;
+
+                        default:
+                            exception = new Exception(connection.getResponseMessage());
+                    }
+                }
+                finally{
+                    connection.disconnect();
+                }
+            }
+            catch(Exception e) {
+                exception = e;
+            }
+            return flag;
+        }
+
+        @Override
+        protected void onPostExecute(Integer status) {
+            if (status != HttpURLConnection.HTTP_OK){
+                AppVariable.alert(getActivity(), exception.getMessage());
+            }
+            else {
+                try{
+                    JSONObject jsonObject = new JSONObject(strJsonResponse);
+                    String result = jsonObject.getString("result");
+                    if (result.equals("failure")){
+                        progressDialog.dismiss();
+                        AppVariable.alert(getActivity(), null);
+                        return;
+                    }
+
+                    JSONArray quizList = jsonObject.getJSONArray("quiz_list");
+
+                    if (quizList != null && quizList.length() > 0) {
+                        Intent intent = new Intent(getActivity(), TeacherQuizActivity.class);
+                        getActivity().startActivity(intent);
+                    } else {
+                        AppVariable.alert(getActivity(), "Please create a quiz");
+                    }
+//
+//                    int length = Integer.valueOf(jsonObject.getString("length"));
+//                    JSONArray studentsJson = jsonObject.getJSONArray("check_attendance_list");
+//
+//                    ArrayList<Student> students = new ArrayList<>();
+//                    for (int i = 0; i < length; i++){
+//                        JSONObject s = studentsJson.getJSONObject(i);
+//                        students.add(new Student(
+//                                s.getInt("id"),
+//                                s.getString("code"),
+//                                s.getString("name"),
+//                                s.getInt("status")
+//                        ));
+//                    }
+//
+//                    saveStudentData(students);
+//                    startActivity(new Intent(getContext(), TeacherQuizActivity.class));
+
+
+                } catch (Exception e) {
+                    AppVariable.alert(getActivity(), e.getMessage());
+                }
+            }
+
+            progressDialog.dismiss();
+
+//            startActivity(new Intent(getContext(), TeacherQuizActivity.class));
+
+//            Toast.makeText(AttendanceFragment.this.getActivity(), "Status: " + status, Toast.LENGTH_LONG).show();
+
+//            if (status != HttpURLConnection.HTTP_OK){
+//                //makeSyncTask(id, 1);
+//            }
+//            else {
+//                try{
+//                    JSONObject jsonObject = new JSONObject(strJsonResponse);
+//                    String result = jsonObject.getString("result");
+////                    if (result.equals("failure")){
+////                        //makeSyncTask(id, 1);
+////                    }
+////
+////                    db.removeAttendanceData(attendanceID);
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+//            }
         }
     }
 }
