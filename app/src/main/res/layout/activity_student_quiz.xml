@@ -1,29 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
     android:fitsSystemWindows="true"
     tools:context="com.example.hoangdang.diemdanh.studentQuiz.StudentQuizActivity"
-    tools:layout_editor_absoluteY="25dp">
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/txt_waiting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="You joined the quiz. \n Wait for teacher start the quiz"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        android:gravity="center_horizontal"/>
 
     <LinearLayout
-        android:id="@+id/quiz_ll"
-        android:layout_width="0dp"
+        android:id="@+id/lil_answer"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:paddingTop="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_constraintLeft_creator="1"
-        tools:layout_constraintRight_creator="1"
-        tools:layout_constraintTop_creator="1">
+        android:gravity="center_horizontal"
+        android:layout_centerInParent="true">
+
+        <TextView
+            android:id="@+id/txt_a"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:background="#00DEBC"
+            android:gravity="center"
+            android:text="A"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/txt_b"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="#00DEBC"
+            android:gravity="center"
+            android:text="B"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/txt_c"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="#00DEBC"
+            android:gravity="center"
+            android:text="C"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
+
+        <TextView
+            android:id="@+id/txt_d"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            android:background="#00DEBC"
+            android:gravity="center"
+            android:text="D"
+            android:textColor="@color/white"
+            android:textSize="20sp"/>
 
     </LinearLayout>
 
-</android.support.constraint.ConstraintLayout>
+</RelativeLayout>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
+
+    <RelativeLayout
+        android:id="@+id/rel_topbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/action_bar_size"
+        android:background="@color/primary_darker">
+
+        <ImageView
+            android:id="@+id/imv_back"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_back_white"/>
+
+        <TextView
+            android:id="@+id/txt_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Face Detection"
+            android:textSize="@dimen/title_text_size"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rel_main"
+        android:layout_below="@+id/rel_topbar"
+        android:background="@android:color/white"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rel_select_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginBottom="@dimen/view_margin">
+
+            <RelativeLayout
+                android:id="@+id/add_faces_control"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="@dimen/view_margin"
+                android:layout_marginEnd="@dimen/view_margin" >
+
+                <TextView
+                    android:id="@+id/text_all_faces"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:text="@string/zero_face" />
+
+                <Button
+                    android:id="@+id/btn_select_image"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:text="Select image"
+                    style="@style/ButtonStyle" />
+
+            </RelativeLayout>
+
+            <GridView
+                android:id="@+id/all_faces"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_toRightOf="@+id/add_faces_control"
+                android:layout_toEndOf="@+id/add_faces_control"
+                android:numColumns="4"
+                android:horizontalSpacing="@dimen/view_margin"
+                android:verticalSpacing="@dimen/view_margin"
+                android:background="#E0E0E0" />
+
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/txt_result_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rel_select_image"
+            android:text="Result"/>
+
+        <LinearLayout
+            android:id="@+id/lil_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="horizontal" >
+
+            <Button
+                android:id="@+id/identify"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginRight="@dimen/view_margin"
+                android:layout_marginEnd="@dimen/view_margin"
+                android:text="Identify"
+                style="@style/ButtonStyle" />
+
+            <Button
+                android:id="@+id/done_and_save"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Submit"
+                style="@style/ButtonStyle" />
+
+        </LinearLayout>
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/txt_result_title"
+            app:tabMode="fixed"
+            android:background="@color/primary_dark"
+            android:minHeight="@dimen/action_bar_size"
+            app:tabGravity="fill"
+            app:tabTextColor="@color/black"
+            app:tabSelectedTextColor="@color/green"/>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#E0E0E0"
+            android:layout_below="@+id/tabs"
+            android:layout_above="@+id/lil_buttons"/>
+
+    </RelativeLayout>
+
+</RelativeLayout>

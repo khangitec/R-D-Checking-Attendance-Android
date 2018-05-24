@@ -11,7 +11,13 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
-
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/statistic_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Statistic"
+            android:textSize="20sp"
+            android:textColor="@color/black"/>
 
         <GridView android:id="@+id/gridView_current_session"
             android:layout_width="match_parent"
@@ -44,6 +50,17 @@
             android:textColor="@color/white"
             android:text="@string/btQR"/>
 
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/use_face_rec_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:text="@string/btFR"/>
 
         <android.support.v7.widget.AppCompatButton
             android:id="@+id/use_quiz_button"
@@ -55,18 +72,6 @@
             android:textColor="@color/white"
             android:layout_height="wrap_content"
             android:text="@string/btQ"/>
-
-        <android.support.v7.widget.AppCompatButton
-            android:id="@+id/use_face_rec_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:layout_marginBottom="10dp"
-            android:textSize="20sp"
-            android:textColor="@color/white"
-            android:text="@string/btFR"/>
-
 
     </LinearLayout>
 
