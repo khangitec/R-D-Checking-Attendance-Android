@@ -27,9 +27,11 @@ public class CheckedFragment extends Fragment {
 
     private ArrayList<Student> mStudentList;
     private StudentAdapter mStudentAdapter;
+    private boolean isShowImvClose;
 
     public interface CheckFragmentListener {
         void onItemCheckClick(int position);
+        void onItemCloseClick(int position);
     }
 
     @Override
@@ -52,6 +54,10 @@ public class CheckedFragment extends Fragment {
         mRecyclerStudents.setAdapter(mStudentAdapter);
 
         return view;
+    }
+
+    public void setIsShowImvClose(boolean isShowImvClose) {
+        this.isShowImvClose = isShowImvClose;
     }
 
     public void setStudentList(ArrayList<Student> studentList) {
@@ -109,6 +115,20 @@ public class CheckedFragment extends Fragment {
 //                Glide.with(getActivity()).load(student.avatar).into(holder.imvIconStudent);
 //            }
 
+            if (isShowImvClose) {
+                holder.imvClose.setVisibility(View.VISIBLE);
+                holder.imvClose.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (mListener != null) {
+                            mListener.onItemCloseClick(position);
+                        }
+                    }
+                });
+            } else {
+                holder.imvClose.setVisibility(View.GONE);
+            }
+
             holder.relMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -134,6 +154,7 @@ public class CheckedFragment extends Fragment {
         TextView txtStudentCode;
         TextView txtStudentName;
         ImageView imvIconStudent;
+        ImageView imvClose;
 
         public StudentHolder(View itemView) {
             super(itemView);
@@ -142,6 +163,7 @@ public class CheckedFragment extends Fragment {
             txtStudentCode = (TextView) itemView.findViewById(R.id.txt_student_code);
             txtStudentName = (TextView) itemView.findViewById(R.id.txt_student_name);
             imvIconStudent = (ImageView) itemView.findViewById(R.id.imv_ic_student);
+            imvClose = (ImageView) itemView.findViewById(R.id.imv_close);
         }
     }
 }
