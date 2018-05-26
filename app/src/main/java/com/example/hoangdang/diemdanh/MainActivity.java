@@ -117,6 +117,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             pref.edit().putInt(AppVariable.CURRENT_ATTENDANCE, 1).apply();
         }
         else{
+            progressDialog.show();
             new GetOpeningCourseTask().execute(
                     pref.getString(AppVariable.USER_TOKEN, null),
                     pref.getString(AppVariable.USER_ID, null));
@@ -324,8 +325,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         @Override
         protected void onPreExecute() {
-
-            progressDialog.show();
         }
 
         @Override
