@@ -100,7 +100,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
 
-    private ArrayList<Student> mStudentList;
+//    private ArrayList<Student> mStudentList;
 //    private ArrayList<Uri> mImageUriList;
     private ArrayList<String> mImagePathList;
     private ArrayList<String> mImageUriRealPathList;
@@ -140,7 +140,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
         mUserToken = getIntent().getExtras().getString("userToken");
         mAttendanceId = getIntent().getExtras().getInt("attendanceID");
 
-        mStudentList = new ArrayList<>();
+//        mStudentList = new ArrayList<>();
 //        mImageUriList = new ArrayList<>();
         mImagePathList = new ArrayList<>();
         mImageUriRealPathList = new ArrayList<>();
@@ -175,9 +175,11 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
 
     private void initCheckViewPager() {
         mPresentFragment = new CheckedFragment();
+        mPresentFragment.setIsShowImvClose(true);
         mPresentFragment.mListener = this;
 
         mAbsentFragment = new CheckedFragment();
+        mAbsentFragment.setIsShowImvClose(false);
 
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
@@ -195,6 +197,20 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
     public void onItemCheckClick(int position) {
         mStudentIndexToReplace = position;
         showRepleceStudentDialog();
+    }
+
+    public void onItemCloseClick(int position) {
+        ArrayList<Student> presentList = mPresentFragment.getStudentList();
+        ArrayList<Student> absentList = mAbsentFragment.getStudentList();
+
+        Student student = presentList.get(position);
+        student.thumbnail = null;
+
+        presentList.remove(student);
+        absentList.add(student);
+
+        mPresentFragment.setStudentList(presentList);
+        mAbsentFragment.setStudentList(absentList);
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -394,7 +410,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
         protected Integer doInBackground(String... params) {
             int flag = 0;
             try {
-                URL url = new URL(Network.API_RETRIEVE_STUDENT);
+                URL url = new URL(Network.API_RETRIEVE_STUDENT_FACE);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 try {
                     //prepare json data
@@ -466,7 +482,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
                     int length = Integer.valueOf(jsonObject.getString("length"));
                     JSONArray studentsJson = jsonObject.getJSONArray("check_attendance_list");
 
-                    mStudentList.removeAll(mStudentList);
+                    ArrayList<Student> studentList = new ArrayList<>();
 
                     for (int i = 0; i < length; i++){
                         JSONObject s = studentsJson.getJSONObject(i);
@@ -480,9 +496,10 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
                         student.person_id = s.getString("person_id");
                         student.avatar = s.getString("avatar");
 
-                        mStudentList.add(student);
+                        studentList.add(student);
                     }
-                    mAbsentFragment.setStudentList(mStudentList);
+                    //TODO
+                    mAbsentFragment.setStudentList(studentList);
 
                     return;
 
@@ -509,7 +526,11 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
         }
 
         public void addFaces(Face[] detectionResult) {
-            if (detectionResult != null) {
+            if (detectionResult != null && detectionResult.length > 0) {
+                faces.removeAll(faces);
+                faceThumbnails.removeAll(faceThumbnails);
+                faceIdThumbnailMap.clear();
+
                 List<Face> detectedFaces = Arrays.asList(detectionResult);
                 for (Face face: detectedFaces) {
                     faces.add(face);
@@ -600,35 +621,34 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
     private void setUiAfterIdentification(IdentifyResult[] result, boolean succeed) {
         progressDialog.dismiss();
 
-//        setAllButtonsEnabledStatus(true);
-        setIdentifyButtonEnabledStatus(false);
-
         //TODO
 
         if (succeed) {
             if (result != null) {
-                ArrayList<Student> checkedList = new ArrayList<>();
-                ArrayList<Student> unCheckedList = new ArrayList<>();
+                ArrayList<Student> presentList = mPresentFragment.getStudentList();
+                ArrayList<Student> absentList = new ArrayList<>();
 
-                unCheckedList.addAll(mStudentList);
+                for (int i = 0; i < mAbsentFragment.getStudentList().size(); i++) {
+                    Student student = mAbsentFragment.getStudentList().get(i);
+                    absentList.add(student);
+                }
 
-                for (int i = 0; i < mStudentList.size(); i++) {
-                    Student student = mStudentList.get(i);
+                for (int i = 0; i < mAbsentFragment.getStudentList().size(); i++) {
+                    Student student = mAbsentFragment.getStudentList().get(i);
 
                     for (IdentifyResult identifyResult: result) {
-                        String faceId = identifyResult.faceId.toString();
+//                        String faceId = identifyResult.faceId.toString();
 
                         if (identifyResult.candidates != null) {
                             for (int j = 0; j < identifyResult.candidates.size(); j++) {
                                 String personId = identifyResult.candidates.get(0).personId.toString();
 
-                                if (isPersonIdExistInList(unCheckedList, personId) &&
-                                        personId.equals(student.person_id)) {
+                                if (personId.equals(student.person_id)) {
 
                                     student.thumbnail = mFaceListAdapter.faceIdThumbnailMap.get(identifyResult.faceId);
 
-                                    checkedList.add(student);
-                                    unCheckedList.remove(student);
+                                    presentList.add(student);
+                                    absentList.remove(student);
                                 }
                             }
                         }
@@ -636,49 +656,31 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
                     }
                 }
 
-                Log.d("sdfdsf", "dfdfdf");
-                mPresentFragment.setStudentList(checkedList);
-                mAbsentFragment.setStudentList(unCheckedList);
-
-//                mFaceListAdapter.setIdentificationResult(result);
-//
-//                String logString = "Response: Success. ";
-//                for (IdentifyResult identifyResult: result) {
-//                    logString += "Face " + identifyResult.faceId.toString() + " is identified as "
-//                            + (identifyResult.candidates.size() > 0
-//                            ? identifyResult.candidates.get(0).personId.toString()
-//                            : "Unknown Person")
-//                            + ". ";
-//                }
-//                addLog(logString);
-//
-//                // Show the detailed list of detected faces.
-//                ListView listView = (ListView) findViewById(R.id.list_identified_faces);
-//                listView.setAdapter(mFaceListAdapter);
+                mPresentFragment.setStudentList(presentList);
+                mAbsentFragment.setStudentList(absentList);
             }
         }
     }
 
-    private boolean isPersonIdExistInList(ArrayList<Student> students, String personId) {
-        for (int i = 0; i < students.size(); i++) {
-            Student student = students.get(i);
-            if (student.person_id != null && student.person_id.equals(personId)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    // Set the group button is enabled or not.
-    private void setIdentifyButtonEnabledStatus(boolean isEnabled) {
-        Button button = (Button) findViewById(R.id.identify);
-        button.setEnabled(isEnabled);
-    }
+//    private boolean isPersonIdExistInList(ArrayList<Student> students, String personId) {
+//        for (int i = 0; i < students.size(); i++) {
+//            Student student = students.get(i);
+//            if (student.person_id != null && student.person_id.equals(personId)) {
+//                return true;
+//            }
+//        }
+//
+//        return false;
+//    }
 
     private void clickSubmit() {
-        mCount = 0;
-        uploadFaceToServer();
+        mCount = mImageUriRealPathList.size() - 1;
+        if (mCount > -1) {
+            uploadFaceToServer();
+        } else {
+            AppVariable.alert(FaceDetectionActivity.this, "You need select an image");
+            return;
+        }
     }
 
     private void createUpload(File image, String faceId) {
@@ -701,17 +703,6 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
             progressDialog.show();
             new UploadService(this).Execute(upload, new FaceDetectionActivity.UiCallback());
 
-//            String faceId = faceGridViewAdapter.faceIdList.get(mCount);
-//            String parentFaceUriStr = StorageHelper.getParentFaceUri(faceId, this);
-//            Uri parentFaceUri = Uri.parse(parentFaceUriStr);
-//            String filePath = DocumentHelper.getPath(this, parentFaceUri);
-//            if (filePath == null || filePath.isEmpty()) return;
-//            File file = new File(filePath);
-//
-//            createUpload(file, faceId);
-//
-//            progressDialog.show();
-//            new UploadService(this).Execute(upload, new PersonActivity.UiCallback());
         } else {
             SharedPreferences pref = new SecurePreferences(FaceDetectionActivity.this);
 
@@ -837,7 +828,6 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
         }
     }
 
-    //TODO
     private void showRepleceStudentDialog() {
         if (mReplaceStudentDialog != null) {
             mReplaceStudentDialog.cancel();
@@ -878,7 +868,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
         @Override
         public void onBindViewHolder(StudentHolder holder, int position) {
 
-            final Student student = mStudentList.get(position);
+            final Student student = mAbsentFragment.getStudentList().get(position);
 
             if (student.stud_id != null && !student.stud_id.equals(""))
                 holder.txtStudentCode.setText(student.stud_id);
@@ -887,7 +877,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
                 holder.txtStudentCode.setText(student.student_id);
 
             if (student.first_name != null && !student.first_name.equals(""))
-                holder.txtStudentName.setText(mStudentList.get(position).first_name + " " + mStudentList.get(position).last_name);
+                holder.txtStudentName.setText(student.first_name + " " + student.last_name);
 
             if (student.name != null && !student.name.equals("")) {
                 holder.txtStudentName.setText(student.name);
@@ -933,7 +923,7 @@ public class FaceDetectionActivity extends AppCompatActivity implements View.OnC
 
         @Override
         public int getItemCount() {
-            return mStudentList.size();
+            return mAbsentFragment.getStudentList().size();
         }
     }
 
