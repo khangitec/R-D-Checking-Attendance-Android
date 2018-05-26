@@ -23,6 +23,7 @@ public class Network {
     public static final String API_LOGOUT = HOST + "authenticate/logout";
 
     public static final String API_RETRIEVE_STUDENT = HOST + "api/attendance/check-attendance";
+    public static final String API_RETRIEVE_STUDENT_FACE = HOST + "api/attendance/check-attendance-face-recognition";
     public static final String API_SUBMIT_CHECK_ATTENDANCE = HOST + "api/check-attendance/verify-face";
 
     public static final String API_RETRIEVE_COURSE_LIST = HOST + "api/course/teaching";
